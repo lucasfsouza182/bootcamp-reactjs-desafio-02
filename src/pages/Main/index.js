@@ -9,8 +9,10 @@ import moment from 'moment'
 class Main extends Component{
 
   state = {
+    repositoryError: false,
     repositoryInput:'',
     repositories: [],
+    loading: false,
   }
 
   handleAddRepository = async (e) =>{
@@ -23,10 +25,13 @@ class Main extends Component{
 
       this.setState({
         repositoryInput:'',
-        repositories: [...this.state.repositories , repository]
+        repositories: [...this.state.repositories , repository],
+        repositoryError: false
       })
     } catch (err) {
-      console.log(err)
+      this.setState({ repositoryError: true })
+    }finally {
+      this.setState({ loading: false });
     }
 
   }
@@ -36,12 +41,12 @@ class Main extends Component{
       <Container>
         <img src={logo} alt="Github Compare" />
 
-        <Form  onSubmit={this.handleAddRepository}>
+        <Form withError={this.state.repositoryError} onSubmit={this.handleAddRepository}>
           <input type="text" placeholder="usuário/repositorio"
           value={this.state.repositoryInput}
           onChange={e => this.setState({ repositoryInput: e.target.value })}
         />
-          <button type="submit">OK</button>
+          <button type="submit">{this.state.loading ? <i className="fa fa-spinner fa-pulse" /> : 'OK'}</button>
         </Form>
 
         <CompareList repositories={this.state.repositories}/>
